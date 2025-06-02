@@ -1,3 +1,4 @@
+
 body {
     font-family: sans;
     margin: 0;
@@ -237,6 +238,20 @@ nav {
   .academic-program-cards-section {
     margin: 1rem auto;
     padding: 0.7rem 0.5rem;
+  }
+}
+@media (max-width: 900px) {
+  .academic-program-cards-section {
+    max-width: 98vw;
+    padding: 0.7rem 0.5rem;
+  }
+  .academic-programs-list {
+    flex-direction: column;
+    gap: 1em;
+  }
+  .program-card {
+    max-width: 100%;
+    min-width: 0;
   }
 }
 
@@ -747,69 +762,161 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 /* Responsive improvements */
+@media (max-width: 900px) {
+  .academic-program-cards-section {
+    max-width: 98vw;
+    padding: 0.7rem 0.5rem;
+  }
+  .academic-programs-list {
+    flex-direction: column;
+    gap: 1em;
+  }
+  .program-card {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
 @media (max-width: 700px) {
-    .nav-bar {
-        flex-direction: column;
-        gap: 0.5em;
-    }
-    .application-form {
-        padding: 1em;
-    }
-    .contact-form {
-        padding: 1em;
-    }
-    .hero {
-        padding: 2rem 0.5rem 1.5rem 0.5rem;
-    }
-    section {
-        padding: 1em;
-    }
-    .academic-programs-list {
-        flex-direction: column;
-        gap: 1em;
-    }
-    .program-card {
-        max-width: 100%;
-        min-width: 0;
-    }
+  .hero {
+    padding: 2rem 0.5rem 1.5rem 0.5rem;
+  }
+  .about-us, .mission-bg, .academic-programs, .admission, .application-section, .faq-section, .testimonials {
+    padding: 1em;
+    margin: 1em auto;
+    max-width: 98vw;
+  }
+  section {
+    padding: 1em;
+    margin: 1em auto;
+    max-width: 98vw;
+  }
+  .academic-programs-list {
+    flex-direction: column;
+    gap: 1em;
+  }
+  .program-card {
+    max-width: 100%;
+    min-width: 0;
+  }
+  .application-form, .contact-form {
+    padding: 0.5em;
+    margin: 0.5em auto;
+    max-width: 98vw;
+  }
 }
-
 @media (max-width: 500px) {
-    .hero h2 {
-        font-size: 1.3rem;
-    }
-    .hero p {
-        font-size: 1rem;
-    }
-    .application-form, .contact-form {
-        padding: 0.5em;
-    }
-    section {
-        padding: 0.5em;
-    }
+  h1, h2, h3 {
+    font-size: 1.1em;
+  }
+  .hero h2 {
+    font-size: 1.1rem;
+  }
+  .hero p {
+    font-size: 0.95rem;
+  }
+  .img-caption {
+    font-size: 0.9rem;
+    padding: 0.15em 0.3em;
+  }
+  .application-form, .contact-form {
+    padding: 0.2em;
+  }
+  section {
+    padding: 0.2em;
+  }
 }
 
-.academy-logo {
-  height: 48px;
-  width: auto;
-  vertical-align: middle;
-  margin-right: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+/* Hamburger menu styles */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5em;
+  margin-left: auto;
+  z-index: 120;
+}
+.hamburger {
+  display: block;
+  width: 28px;
+  height: 3px;
+  background: #ECA400;
+  border-radius: 2px;
+  position: relative;
+  transition: background 0.2s;
+}
+.hamburger::before, .hamburger::after {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 3px;
+  background: #ECA400;
+  border-radius: 2px;
+  position: absolute;
+  left: 0;
+  transition: transform 0.3s, top 0.3s, bottom 0.3s;
+}
+.hamburger::before {
+  top: -9px;
+}
+.hamburger::after {
+  bottom: -9px;
+}
+.nav-toggle.open .hamburger {
+  background: transparent;
+}
+.nav-toggle.open .hamburger::before {
+  transform: translateY(9px) rotate(45deg);
+}
+.nav-toggle.open .hamburger::after {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+@media (max-width: 900px) {
+  .nav-toggle {
+    display: block;
+  }
+  .nav-bar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 70vw;
+    max-width: 320px;
+    background: #052F5F;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 5rem 2rem 2rem 2rem;
+    box-shadow: -2px 0 16px rgba(0,0,0,0.18);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(.77,0,.18,1);
+    z-index: 110;
+    opacity: 0.98;
+    gap: 1.5em;
+  }
+  .nav-bar.nav-open {
+    transform: translateX(0);
+  }
+  .nav-bar li {
+    margin: 1em 0;
+  }
+  nav {
+    flex-wrap: nowrap;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Hide nav-bar on mobile by default */
+@media (max-width: 900px) {
+  .nav-bar {
+    display: flex;
+  }
+}
+
+/* Active nav link highlighting */
+.nav-bar li a.active {
   background: #fff;
-  transition: box-shadow 0.2s;
-}
-.logo-link {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 1.5rem;
-}
-@media (max-width: 600px) {
-  .academy-logo {
-    height: 36px;
-    margin-right: 0.75rem;
-  }
-  .logo-link {
-    margin-right: 0.75rem;
-  }
+  color: #ECA400;
+  box-shadow: 0 2px 8px rgba(236,164,0,0.10);
 }
