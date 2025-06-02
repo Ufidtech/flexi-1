@@ -1,119 +1,118 @@
-// Debounce utility
-function debounce(fn, delay) {
-  let timeout;
-  return function(...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => fn.apply(this, args), delay);
-  };
-}
-
-// Section animation on scroll using Intersection Observer
-function initSectionObserver() {
+function revealSections() {
   const sections = document.querySelectorAll('section, .about-us, .academic-programs, .admission, .mission-bg');
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) entry.target.classList.add('visible');
-        });
-      },
-      { threshold: 0.08 }
-    );
-    sections.forEach(section => observer.observe(section));
-  } else {
-    // Fallback to scroll event with debounce
-    function revealSections() {
-      const trigger = window.innerHeight * 0.92;
-      sections.forEach(function(sec) {
-        const top = sec.getBoundingClientRect().top;
-        if (top < trigger) sec.classList.add('visible');
-      });
-    }
-    window.addEventListener('scroll', debounce(revealSections, 100));
-    window.addEventListener('DOMContentLoaded', revealSections);
-  }
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  sections.forEach(sec => observer.observe(sec));
 }
+window.addEventListener('DOMContentLoaded', revealSections);
 
-// Scroll-to-top button with ARIA for accessibility
-function initScrollToTop() {
-  const scrollBtn = document.getElementById('scrollToTopBtn');
-  if (!scrollBtn) return;
-  scrollBtn.setAttribute('aria-label', 'Scroll to top');
-  window.addEventListener('scroll', debounce(function() {
-    if (window.scrollY > 300) {
-      scrollBtn.classList.add('show');
-    } else {
-      scrollBtn.classList.remove('show');
-    }
-  }, 100));
-  scrollBtn.addEventListener('click', function() {
+const scrollBtn = document.getElementById('scrollToTopBtn');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) {
+    scrollBtn.classList.add('show');
+  } else {
+    scrollBtn.classList.remove('show');
+  }
+});
+if (scrollBtn) {
+  scrollBtn.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
 
-// Lightbox functionality with Escape key support
-function initLightbox() {
-  const lightbox = document.getElementById('lightboxModal');
-  const lightboxImg = document.getElementById('lightboxImg');
-  const lightboxClose = document.getElementById('lightboxClose');
-  if (!lightbox || !lightboxImg || !lightboxClose) return;
-
-  document.querySelectorAll('.academy-image').forEach(function(img) {
-    img.style.cursor = 'zoom-in';
-    img.addEventListener('click', function() {
+const lightbox = document.getElementById('lightboxModal');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxClose = document.getElementById('lightboxClose');
+document.querySelectorAll('.academy-image').forEach(img => {
+  img.style.cursor = 'zoom-in';
+  img.addEventListener('click', function () {
+    if (lightbox && lightboxImg) {
       lightboxImg.src = this.src;
       lightboxImg.alt = this.alt;
       lightbox.classList.add('active');
-      lightboxImg.focus();
-    });
-    img.addEventListener('error', function() {
-      this.classList.add('error');
-      this.src = 'fallback.jpg'; // fallback image
-    });
+    }
   });
-
-  lightboxClose.addEventListener('click', function() {
-    lightbox.classList.remove('active');
-  });
-
-  lightbox.addEventListener('click', function(e) {
+});
+if (lightboxClose) {
+  lightboxClose.addEventListener('click', () => lightbox.classList.remove('active'));
+}
+if (lightbox) {
+  lightbox.addEventListener('click', e => {
     if (e.target === lightbox) lightbox.classList.remove('active');
   });
+}
 
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      lightbox.classList.remove('active');
+document.querySelectorAll('.faq-question').forEach(q => {
+  q.addEventListener('click', function () {
+    document.querySelectorAll('.faq.open').forEach(openFaq => {
+      if (openFaq !== q.parentElement) openFaq.classList.remove('open');
+    });
+    this.parentElement.classList.toggle('open');
+  });
+});
+
+document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+  img.addEventListener('load', function () {
+    img.classList.add('loaded');
+  });
+});
+
+const navToggle = document.getElementById('navToggle');
+const navBar = document.getElementById('navBar');
+
+if (navToggle && navBar) {
+  navToggle.addEventListener('click', function () {
+    const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+    navToggle.setAttribute('aria-expanded', !expanded);
+    navBar.classList.toggle('nav-open');
+    navToggle.classList.toggle('open');
+  });
+  navBar.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navBar.classList.remove('nav-open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (
+      navBar.classList.contains('nav-open') &&
+      !navBar.contains(e.target) &&
+      !navToggle.contains(e.target)
+    ) {
+      navBar.classList.remove('nav-open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
     }
   });
 }
 
-// FAQ toggle
-function initFAQToggle() {
-  document.querySelectorAll('.faq-question').forEach(function(q) {
-    q.addEventListener('click', function() {
-      this.parentElement.classList.toggle('open');
-    });
-  });
-}
+const navLinks = document.querySelectorAll('.nav-bar a');
+const sectionIds = Array.from(navLinks).map(link => link.getAttribute('href')).filter(href => href && href.startsWith('#'));
+const sections = sectionIds.map(id => document.querySelector(id));
 
-// Lazy loading image blur removal with error handling
-function initLazyLoading() {
-  document.querySelectorAll('img[loading="lazy"]').forEach(function(img) {
-    img.addEventListener('load', function() {
-      img.classList.add('loaded');
-    });
-    img.addEventListener('error', function() {
-      this.classList.add('error');
-      this.src = 'fallback.jpg'; // fallback image
-    });
-  });
+function highlightNav() {
+  let scrollPos = window.scrollY || window.pageYOffset;
+  let offset = 120;
+  let found = false;
+  for (let i = sections.length - 1; i >= 0; i--) {
+    const sec = sections[i];
+    if (sec && sec.offsetTop - offset <= scrollPos) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      navLinks[i].classList.add('active');
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    navLinks.forEach(link => link.classList.remove('active'));
+  }
 }
-
-// Initialize all features on DOMContentLoaded
-window.addEventListener('DOMContentLoaded', () => {
-  initSectionObserver();
-  initScrollToTop();
-  initLightbox();
-  initFAQToggle();
-  initLazyLoading();
-});
+window.addEventListener('scroll', highlightNav);
+window.addEventListener('DOMContentLoaded', highlightNav);
